@@ -1,49 +1,55 @@
-from datetime import datetime as dt
+from datetime import datetime
 import os
 
-def isoformat(isoformat):
-    if type(isoformat) != str:
-        return None
-    if len(isoformat) < 16:
+def formatISO(isofstr):
+    if type(isofstr) != str and len(isofstr) < 16:
         return None
     else:
-        if len(isoformat) > 16:
-            isoformat = isoformat[0:16]
+        if len(isofstr) > 16:
+            isofstr = isofstr[0:16]
         try:
-            date = []
-            arr = isoformat.split("-")
-            for i in range(len(arr)-1):
-                date.append(arr[i])
-            arr2 = arr[len(arr)-1].split("T")
-            for i in range(len(arr2)-1):
-                date.append(arr2[i])
-            arr3 = arr2[len(arr2)-1].split(":")
-            for i in range(len(arr3)):
-                date.append(arr3[i])
-            print(date)
-            for i in range(len(date)):
-                date[i] = int(date[i])
-                if date[i] == None:
-                    break
-            year  = None
-            month = None
-            day = None
-            hour = None
-            minute = None
-            if(len(date) == 5):
-                year = date[0]
-                month = date[1]
-                day = date[2]
-                hour = date[3]
-                minute = date[4]
+            _date = []
+            _date = isofstr.split("-")
+            _string = _date[len(_date) - 1]
+            holder = _string.split("T")
+            _date.pop()
+            for i in range(len(holder)-1):
+                _date.append(holder[i])
+            _string = holder[len(holder)-1]
+            holder = _string.split(":")
 
-            d = dt(year, month, day, hour, minute)
-            return d
+            for i in range(len(holder)):
+                _date.append(holder[i])
+
+            for i in range(len(_date)):
+                if type(_date[i]) != str:
+                    return None
+                else: 
+                    _date[i] = int(_date[i])
+
+            year, month, day, hour, minute  = ( None, None, None, None, None)  
+
+            if len(_date) == 5:
+                year = _date[0]
+                month = _date[1]
+                day = _date[2]
+                hour = _date[3]
+                minute = _date[4]
+            else:
+                return None
+
+            _dateObj = datetime(year, month, day, hour, minute)
+            return _dateObj
+
         except (Exception, ValueError):
+            print(666)
+            print(_date[i])
             return None
+
+
 if __name__ == "__main__":
     d = dt.today()
-    iso = d.isoformat()
+    iso = d.isofstr()
     print(iso)
-    print(isoformat(d.isoformat()))
+    print(isofstr(d.isofstr()))
     

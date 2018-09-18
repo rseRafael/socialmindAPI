@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    
     'addmedia.apps.AddmediaConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,6 +52,46 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_METHODS = (
+    'POST', 
+    'DELETE',
+    'GET', 
+    'PUT'
+)
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
+# Application definition
+#CORS_ALLOW_ALL = True
+
+CSRF_COOKIE_SECURE = False
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:4200/',
+    'http://localhost:4200',
+    'http://localhost:4200/addmedia/facebook/config/',
+    'http://localhost:4200/addmedia/facebook/config',
+    'http://127.0.0.1:4200/addmedia/facebook/config/',
+    'http://127.0.0.1:4200/addmedia/facebook/config',
+    'localhost:4200/addmedia/facebook/config/',
+    'localhost:4200/addmedia/facebook/config',
+    '127.0.0.1:4200/addmedia/facebook/config/',
+    '127.0.0.1:4200/addmedia/facebook/config',
+    
+)
+
+
 
 ROOT_URLCONF = 'socialMindAPI.urls'
 
