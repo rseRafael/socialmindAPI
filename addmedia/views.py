@@ -11,9 +11,11 @@ UpdateInfo  = models.UpdateInfo
 
 @csrf_exempt
 def add(request):
+    global today
     global _msg
-    _msg = ""
     global _result
+    today = datetime.today()
+    _msg = ""
 
     if request.method == "POST":
         if request.POST:
@@ -25,10 +27,13 @@ def add(request):
                 _endDate = formatISO(_mediaData['endDate'])
                 _mediaLink = _mediaData['mediaLink']
                 if _startDate and _endDate:
-                    if _mediaLink:
-                        createNewMedia(_startDate, _endDate, _mediaLink)
-                    else: 
-                        _msg =  "mediaLink attribute is empty."
+                    if checkDate(_startDate, _endDate):
+                        if _mediaLink:
+                            createNewMedia(_startDate, _endDate, _mediaLink)
+                        else: 
+                            _msg =  "mediaLink attribute is empty."
+                    else:
+                        _msg = "Start Date must be before {} and before End Data. Also, the difference between start and end date must be greater than thirty (30) minutes".format(today.isoformat())
                 else: 
                     _msg = "Data Format not allowed."
             else: 
@@ -37,7 +42,7 @@ def add(request):
             _msg =  "POST has no body."
     else:
         _msg = "Method is not POST."
-
+        
     if _msg:
         _result = False
     else: 
@@ -52,10 +57,8 @@ def add(request):
 
 def createNewMedia(startDate, endDate, mediaLink):
     hasstarted, hasfinished = currentState(startDate, endDate)
-    print(1)
     m = Media( startdate = startDate, enddate = endDate, link = mediaLink, hasstarted = hasstarted, hasfinished = hasfinished)
     m.save()
-    print(2)
 
 def currentState(startDate, endDate):
     hasstarted = False
@@ -105,3 +108,21 @@ def checkUpdate():
             _obj.save()
     except Exception as err: 
          pass
+
+
+def checkDate(startdate, enddate):
+    today = datetime.today()
+    if startdate < today:
+        print("é antes de hoje")
+        return False
+    else:
+        if startdate >= enddate:
+            print("é antes de enddate")
+            return False
+        else:
+            delta = enddate - startdate
+            if delta.total_seconds() < 18000:
+                print("a diferença é menor do que msg")
+                return False
+            else: 
+                return True
