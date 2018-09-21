@@ -20,22 +20,27 @@ def add(request):
     if request.method == "POST":
         if request.POST:
             _post = request.POST
+            print(_post)
             _mediaData = _post.get("mediaData")
             if _mediaData:
-                _mediaData = json.loads(_mediaData)
-                _startDate = formatISO(_mediaData['startDate'])
-                _endDate = formatISO(_mediaData['endDate'])
-                _mediaLink = _mediaData['mediaLink']
-                if _startDate and _endDate:
-                    if checkDate(_startDate, _endDate):
-                        if _mediaLink:
-                            createNewMedia(_startDate, _endDate, _mediaLink)
-                        else: 
-                            _msg =  "mediaLink attribute is empty."
-                    else:
-                        _msg = "Start Date must be before {} and before End Data. Also, the difference between start and end date must be greater than thirty (30) minutes".format(today.isoformat())
-                else: 
-                    _msg = "Data Format not allowed."
+                try:
+                    _mediaData = json.loads(_mediaData)
+                    _startDate = formatISO(_mediaData['startDate'])
+                    _endDate = formatISO(_mediaData['endDate'])
+                    _mediaLinks = _mediaData['mediaLinks']
+
+                    if _startDate and _endDate:
+                        if checkDate(_startDate, _endDate):
+                            if _mediaLink:
+                                createNewMedia(_startDate, _endDate, _mediaLinks)
+                            else: 
+                                _msg =  "mediaLink attribute is empty."
+                        else:
+                            _msg = "Start Date must be before {} and before End Data. Also, the difference between start and end date must be greater than thirty (30) minutes".format(today.isoformat())
+                    else: 
+                        _msg = "Data Format not allowed."
+                except Exception as err:
+                    _msg = err.args
             else: 
                 _msg =  "POST body has no mediaData key."
         else:
@@ -54,11 +59,17 @@ def add(request):
     return response
 
 # Create your views here.
+def teste():
+    _json = { 'result': False,  'msg': "qualquer coisa"}
+    response = JsonResponse(_json)
+    response['Access-Control-Allow-Origin'] = "*"
+    return response
 
-def createNewMedia(startDate, endDate, mediaLink):
-    hasstarted, hasfinished = currentState(startDate, endDate)
-    m = Media( startdate = startDate, enddate = endDate, link = mediaLink, hasstarted = hasstarted, hasfinished = hasfinished)
-    m.save()
+def createNewMedia(startDate, endDate, mediaLinks):
+    for mediaLink in mediaLinks:
+        hasstarted, hasfinished = currentState(startDate, endDate)
+        m = Media( startdate = startDate, enddate = endDate, link = mediaLink, hasstarted = hasstarted, hasfinished = hasfinished)
+        m.save()
 
 def currentState(startDate, endDate):
     hasstarted = False
