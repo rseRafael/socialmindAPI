@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from . import settings
+#from . import wsgi as w
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,9 +27,9 @@ SECRET_KEY = 'a8i_&s)g15ojp*f@6+&64x4%=ac%#7)7&td9e766e1)sftjx+7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
-
+DJANGO_SETTINGS_MODULE = settings
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', 
@@ -111,7 +115,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'socialMindAPI.wsgi.application'
+WSGI_APPLICATION = "socialMindAPI.wsgi.application"
 
 
 # Database
@@ -122,7 +126,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'socialmind',
         'USER': 'postgres',
-        'PASSWORD': '24R$&08ubuntu95',
+        'PASSWORD': 'R$&08postgres95',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }

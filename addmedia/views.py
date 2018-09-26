@@ -7,7 +7,12 @@ import json
 
 global Media
 Media = models.Media
+
+global UpdateInfo
 UpdateInfo  = models.UpdateInfo
+
+global mediatypes
+mediatypes = ['facebook', 'twitter', 'youtube', 'instagram']
 
 @csrf_exempt
 def add(request):
@@ -28,13 +33,16 @@ def add(request):
                     _startDate = formatISO(_mediaData['startDate'])
                     _endDate = formatISO(_mediaData['endDate'])
                     _mediaLinks = _mediaData['mediaLinks']
-
+                    _mediaType = _mediaData['mediaType']
                     if _startDate and _endDate:
                         if checkDate(_startDate, _endDate):
-                            if _mediaLink:
-                                createNewMedia(_startDate, _endDate, _mediaLinks)
+                            if len(_mediaLinks) > 0:
+                                if checkMediaType(_mediaType):
+                                    createNewMedia(_startDate, _endDate, _mediaLinks, _mediaType)
+                                else:
+                                    _msg = "received media from a wrong media type: {0}. Types should be one of {1}".format(_mediaType, mediatypes)
                             else: 
-                                _msg =  "mediaLink attribute is empty."
+                                _msg =  "received no links and no media was created."
                         else:
                             _msg = "Start Date must be before {} and before End Data. Also, the difference between start and end date must be greater than thirty (30) minutes".format(today.isoformat())
                     else: 
@@ -65,10 +73,10 @@ def teste():
     response['Access-Control-Allow-Origin'] = "*"
     return response
 
-def createNewMedia(startDate, endDate, mediaLinks):
+def createNewMedia(startDate, endDate, mediaLinks, mediaType):
     for mediaLink in mediaLinks:
         hasstarted, hasfinished = currentState(startDate, endDate)
-        m = Media( startdate = startDate, enddate = endDate, link = mediaLink, hasstarted = hasstarted, hasfinished = hasfinished)
+        m = Media( startdate = startDate, enddate = endDate, link = mediaLink, hasstarted = hasstarted, hasfinished = hasfinished, mediatype= mediaType)
         m.save()
 
 def currentState(startDate, endDate):
@@ -137,3 +145,10 @@ def checkDate(startdate, enddate):
                 return False
             else: 
                 return True
+
+
+def checkMediaType(mediaType):
+    for type in mediatypes:
+        if mediaType == type:
+            return True
+    return False
