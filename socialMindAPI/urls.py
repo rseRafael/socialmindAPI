@@ -19,4 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('media/', include("addmedia.urls")),
+    path('media/', include("seemedia.urls")),
+    path('fakedata/', include('generateFakeData.urls'))
 ]
