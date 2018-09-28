@@ -5,7 +5,7 @@ from addmedia.models import Media
 from urllib.parse import urlparse, parse_qs
 from addmedia.views import mediatypes
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 _json ={}
 _msg = ""
@@ -22,9 +22,10 @@ def getMedia(request):
                 _query = getQuery(_path)
                 if _query:
                     _mediatype = _query['mediatype']
-                    print("-_-_-_{0}-_-_-_-".format(_mediatype))
                     content  = Media.objects.filter(mediatype = _mediatype)
                     if len(content) > 0:
+                        _data = classifyMedias(content)
+                        _json['data'] = json.dumps(_data)
                         _result = True
 
                     else:
@@ -92,19 +93,21 @@ def classifyMedias(medias):
     _json['monitorando'] = []
     _json['futuro'] = []
     _json['erro'] = []
-    _today = datetime.today()
+    _today = datetime.now(timezone.utc)
     for media in medias:
-        if media.hasstarted < today and media.hasfinished < today:
+        print(type(media.startdate), type(_today) )
+        if media.startdate < _today and media.enddate < _today:
             _json['completos'].append(JsonfyMedia(media))
 
-        else if media.hasstarted < today and media.hasfinished > today:
+        elif media.startdate < _today and media.enddate > _today:
             _json['monitorando'].append(JsonfyMedia(media))
 
-        else if media.hasstarted > today and media.hasfinished > today:
+        elif media.startdate > _today and media.enddate > _today:
             _json['futuro'].append(JsonfyMedia(media))
 
-        else if media.hasstarted > today and media.hasfinished < today:
+        elif media.startdate > _today and media.enddate < _today:
             _json['erro'].append(JsonfyMedia(media))
+    return _json
         
 
 def JsonfyMedia(media):
@@ -115,4 +118,4 @@ def JsonfyMedia(media):
     _json['hasstarted'] = media.hasstarted
     _json['hasfinished'] = media.hasfinished
     _json['mediatype'] = media.mediatype
-    return json.dumps(_json)
+    return _json
